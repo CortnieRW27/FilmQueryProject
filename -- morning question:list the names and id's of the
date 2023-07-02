@@ -1,0 +1,260 @@
+-- morning question/list the names and id's of the store managers
+
+
+SELECT store.manager_id, staff.id, staff.first_name, staff.last_name FROM staff JOIN store ON store.manager_id=staff.id;
+
+SELECT film.title, film.description, actor.first_name, actor.last_name
+
+FROM film
+
+JOIN film_actor 
+ON film.id = film_actor.film_id
+
+JOIN actor 
+ON film_actor.actor_id = actor.id
+
+WHERE film.id=934
+;
+
+
+------------------------------------------------
+LABS:
+
+1a. List store ids and their manager's first and last name.
+
+SELECT 
+FROM  JOIN 
+ON 
+;
+
+
+1b. List all store ids and their street addresses.
+
+SELECT store.id, address.address
+FROM store JOIN address 
+ON store.address_id = address.id
+;
+
+
+2a. List the id and full name of each employee, with their full address and their supervisor's id.
+
+SELECT
+FROM 
+JOIN ON
+WHERE 
+;
+
+2d. List all stores along with their full addresses and their managers' full names.
+
+SELECT
+FROM
+JOIN ON
+WHERE
+;
+
+4a. Modify the query to only show rentals where the year of the rental date is 2016.
+
+
+
+
+
+4b. Modify the query to also list the title of the film.
+-----------------------------------------------
+LAB ANSWERS:
+
+
+
+# https://github.com/SkillDistillery/SD39/blob/main/sql1/Joins/labs.md
+# 1a, 1b, 2a, 2d, 4a, 4b
+
+# 1a.
+SELECT store.id, staff.first_name,
+    staff.last_name
+FROM staff
+JOIN store
+ON staff.id = store.manager_id
+;
+
+# 1b.
+SELECT store.id, address.address
+FROM store
+JOIN address
+ON address.id = store.address_id
+;
+
+# 1c.
+SELECT staff.first_name, staff.last_name,
+    address.address
+FROM staff
+JOIN address
+ON staff.address_id = address.address
+;
+
+# 1d.
+SELECT address.city, 
+    staff.first_name, staff.last_name,
+    staff.username
+FROM staff
+JOIN address
+ON staff.address_id = address.id
+WHERE staff.username = ''
+    OR staff.username IS NULL
+;
+
+# 2a.
+SELECT staff.id, staff.first_name, staff.last_name,
+    staff.supervisor_id,
+    address.*
+FROM staff
+JOIN address
+ON staff.address_id = address.id
+;
+
+# 2b.
+SELECT staff.id, staff.first_name, staff.last_name,
+    address.city, address.state_province
+FROM staff
+JOIN store
+ON staff.store_id = store.id
+JOIN address
+ON store.address_id = address.id
+;
+
+# 2c. 
+SELECT customer.first_name, customer.last_name,
+    country.country
+FROM customer
+JOIN address
+ON customer.address_id = address.id
+JOIN country
+ON address.country_code = country.country_code
+;
+
+# 2d.
+SELECT store.id 
+        AS 'Store ID',
+    address.*,
+    CONCAT(staff.first_name, ' ', staff.last_name)
+        AS 'Manager Name'
+FROM store
+JOIN address
+ON store.address_id = address.id
+JOIN staff
+ON store.manager_id = staff.id
+;
+
+# 3.
+SELECT staff.id AS 'Staff ID', 
+    CONCAT(staff.first_name, ' ', staff.last_name)
+        AS 'Name',
+    staff.supervisor_id AS 'Supervisor ID',
+    CONCAT(store.id, ' ', address.city, ', ', address.state_province)
+        AS 'Store'
+FROM staff
+JOIN store
+ON staff.store_id = store.id
+JOIN address
+ON store.address_id = address.id
+;
+
+
+-- b. Modify the query to also list the title of the film.
+# 4a. 
+SELECT rental.id, customer.first_name, customer.last_name,
+    rental.rental_date,
+    staff.first_name, staff.last_name
+FROM rental
+JOIN staff
+ON rental.staff_id = staff.id
+JOIN customer
+ON rental.customer_id = customer.id
+WHERE YEAR(rental.rental_date) = 2016
+ORDER BY rental.rental_date
+;
+
+# 4b.
+SELECT rental.id, customer.first_name, customer.last_name,
+    rental.rental_date,
+    staff.first_name, staff.last_name,
+    film.title
+FROM rental
+JOIN staff
+ON rental.staff_id = staff.id
+JOIN customer
+ON rental.customer_id = customer.id
+JOIN inventory_item
+ON rental.inventory_id = inventory_item.id
+JOIN film
+ON inventory_item.film_id = film.id
+WHERE YEAR(rental.rental_date) = 2016
+ORDER BY rental.rental_date
+;
+
+# 4 (all parts)
+SELECT rental.id AS 'Rental ID',
+    CONCAT(customer.first_name, ' ', customer.last_name)
+        AS 'Customer Name',
+    rental.rental_date AS 'Rental Date',
+    CONCAT(staff.first_name, ' ', staff.last_name)
+        AS 'Staff Name',
+    address.city AS 'Store Location',
+    film.title AS 'Film Title'
+FROM customer
+JOIN rental
+ON rental.customer_id = customer.id
+JOIN staff
+ON rental.staff_id = staff.id
+JOIN inventory_item
+ON rental.inventory_id = inventory_item.id
+JOIN film
+ON inventory_item.film_id = film.id
+JOIN store
+ON inventory_item.store_id = store.id
+JOIN address
+ON store.address_id = address.id
+WHERE YEAR(rental.rental_date) = 2016
+ORDER BY rental.rental_date
+;
+-------------------------------------------------
+HW HINT
+SELECT description, title FROM film WHERE title LIKE '%onk%' OR description LIKE '%onk%';
+
+
+
+
+
+SELECT film.id, film.title, film.release_year, film.rating, film.description, language.name, actor.first_name, actor.last_name
+FROM film
+JOIN language
+ON language.id = film.language_id
+JOIN film_actor
+ON film.id = film_actor.film_id
+JOIN actor
+ON film_actor.actor_id = actor.id
+WHERE film.id = ?
+
+"WHERE title LIKE  ? OR description LIKE  ?"
+
+
+String previousTitle = null;
+            for (Film film : films) {
+                String currentTitle = film.getTitle();
+                if (currentTitle.equals(previousTitle)) {
+                    continue;
+                }
+                previousTitle = currentTitle;
+                System.out.println("\nTitle: " + film.getTitle());
+                System.out.println("Description: " + film.getDescription());
+                System.out.println("Release Year: " + film.getReleaseYear());
+                System.out.println("Rating: " + film.getRating());
+                System.out.println("Language: " + film.getLanguage());
+                System.out.println("Actors: ");
+                for (Actor actor : film.getActors()) {
+                    System.out.println(actor.getFirstName() + " " + actor.getLastName());
+                }
+
+            }
+
+
+
+
